@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
+import UserHomepage from "./components/UserHomepage";
 
 const RouteSwitch = () => {
   return (
@@ -13,6 +14,7 @@ const RouteSwitch = () => {
         <Route path="/" element={<Homepage />} />
         <Route path="/taskaid/signup" element={<Signup />} />
         <Route path="/taskaid/login" element={<Login />} />
+        <Route path="/taskaid" element={<UserHomepage />} />
       </Routes>
       <Footer />
     </BrowserRouter>

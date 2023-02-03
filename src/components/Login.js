@@ -13,6 +13,7 @@ const Login = () => {
 
     const res = await fetch("http://localhost:5000/taskaid/login", {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -74,7 +75,7 @@ const Login = () => {
             </ul>
           )}
           <button type="submit" className="btn btn-primary">
-            Submit
+            Login
           </button>
         </form>
       </div>
