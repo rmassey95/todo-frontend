@@ -6,7 +6,8 @@
   color: rgb(5, 16, 20);
 }
 
-.homepage {
+.homepage,
+.form-container {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
