@@ -38,7 +38,7 @@ const Login = () => {
     });
 
     if (res.status === 200) {
-      return navigate("/taskaid");
+      return navigate("/taskaid/login");
     }
 
     const resData = await res.json();

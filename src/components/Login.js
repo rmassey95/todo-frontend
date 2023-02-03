@@ -1,11 +1,33 @@
 import { React, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState();
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const res = await fetch("http://localhost:5000/taskaid/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    });
+
+    if (res.status === 200) {
+      return navigate("/taskaid");
+    }
+
+    const resData = await res.json();
+    return setError(resData.msg);
   };
 
   const handleUsernameChange = (e) => {
@@ -46,6 +68,11 @@ const Login = () => {
               onChange={handlePasswordChange}
             />
           </div>
+          {error && (
+            <ul>
+              <li className="text-danger">{error}</li>
+            </ul>
+          )}
           <button type="submit" className="btn btn-primary">
             Submit
           </button>
