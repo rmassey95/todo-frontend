@@ -15,6 +15,11 @@
   align-items: center;
 }
 
+.loading {
+  flex-grow: 1;
+  cursor: progress;
+}
+
 .text-color-main {
   color: rgb(255, 107, 53);
 }
@@ -42,5 +47,132 @@
   padding: 0;
 }
 
+.priority-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.priority-dropdown-content {
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.priority-dropdown:hover .priority-dropdown-content {
+  background-color: black;
+}
+
+.filter-options {
+  display: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgb(248, 249, 250);
+  padding: 10px;
+}
+
+.dropdown-content {
+  display: none;
+  background-color: #f1f1f1;
+  min-width: 140px;
+  z-index: 1;
+}
+
+.dropdown {
+  text-align: end;
+}
+
+.dropbtn-filter {
+  padding: 7px 10px 7px 10px;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.prio-btn,
+.label-btn {
+  margin: 5px;
+  background-color: rgb(248, 249, 250);
+  border: none;
+}
+
+.prio-btn:hover,
+.label-btn:hover {
+  background-color: rgb(223, 224, 224);
+}
+
+.dropdown-content button {
+  color: black;
+  width: 100%;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  text-decoration: none;
+  display: block;
+  border: none;
+}
+
+.dropdown-content button:hover {
+  background-color: #ddd;
+}
+
+.sidebar {
+  background-color: rgb(56, 56, 56);
+  width: 25%;
+}
+
+.sidebar-btn {
+  border: none;
+  background-color: transparent;
+  color: white;
+}
+
+.sidebar-btn:hover {
+  color: rgb(223, 224, 224);
+}
+
+.sidebar-txt {
+  color: white;
+}
+
+.sidebar-labels {
+  display: none;
+}
+
+.task-check-body {
+  display: flex;
+  align-items: center;
+}
+
+.task-check {
+  height: 20px;
+  width: 20px;
+  border: 1px solid black;
+  border-radius: 50px;
+  background-color: transparent;
+}
+
+.task-check:hover {
+  cursor: pointer;
+  background-color: rgb(240, 240, 240);
+}
+
+.prio-high {
+  border: 1px solid red;
+  background-color: rgb(250, 207, 207);
+}
+
+.prio-low {
+  border: 1px solid green;
+  background-color: rgb(216, 255, 216);
+}
+
+.prio-med {
+  border: 1px solid yellow;
+  background-color: rgb(252, 252, 211);
+}
+
+.show-content {
+  display: block;
+}
 /* Rich Black FOGRA 5, 16, 20 - All text */
 /* Spanish Blue 239, 160, 11 - Special text*/
