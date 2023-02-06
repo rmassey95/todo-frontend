@@ -1,4 +1,4 @@
-#root {
+.main {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -28,6 +28,11 @@
   text-decoration: none;
 }
 
+.nav-btn {
+  border: none;
+  background-color: transparent;
+}
+
 .navbar-brand:hover {
   color: rgb(220, 107, 53);
 }
@@ -45,6 +50,18 @@
 
 .nav-link {
   padding: 0;
+}
+
+.profile-img {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+}
+
+.user-profile-img {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
 }
 
 .priority-dropdown {
@@ -206,6 +223,12 @@
   padding-top: 5px;
   padding-bottom: 5px;
   background-color: rgba(192, 192, 192, 0.15);
+}
+
+.form-wrap {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 10px;
 }
 
 .show-content {

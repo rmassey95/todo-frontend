@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 const { v4: uuidv4 } = require("uuid");
 
@@ -11,10 +13,9 @@ const TaskForm = () => {
   const [prio, setPrio] = useState("none");
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [labels, setLabels] = useState([]);
 
   const { taskId } = useParams();
-  const location = useLocation();
-  const { labels } = location.state;
   const navigate = useNavigate();
 
   const handleTitleChange = (e) => {
@@ -93,6 +94,17 @@ const TaskForm = () => {
     }
   };
 
+  const getLabels = async () => {
+    const res = await fetch("http://localhost:5000/taskaid/user/labels", {
+      method: "GET",
+      // credentials set to include allows cookies to be passed through request
+      credentials: "include",
+    });
+
+    const labelsRes = await res.json();
+    setLabels(labelsRes.taskLabels);
+  };
+
   const getTask = async () => {
     const res = await fetch(`http://localhost:5000/taskaid/task/${taskId}`, {
       method: "GET",
@@ -114,104 +126,109 @@ const TaskForm = () => {
       setLoading(true);
       getTask();
     }
+    getLabels();
   }, []);
 
   if (loading) {
     return <div className="loading"></div>;
   } else {
     return (
-      <div className="form-container">
-        <div className="container">
-          {taskId ? <h1>Update Task</h1> : <h1>Add Task</h1>}
-          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <div className="mb-3">
-              <label htmlFor="title" className="form-label">
-                Title
-              </label>
-              <input
-                required={true}
-                type="text"
-                className="form-control"
-                id="title"
-                value={title}
-                onChange={handleTitleChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="dueDate" className="form-label">
-                Due Date
-              </label>
-              <input
-                required={true}
-                type="date"
-                className="form-control"
-                id="dueDate"
-                value={dueDate}
-                onChange={handleDueDateChange}
-              />
-            </div>
+      <div className="main">
+        <Navbar />
+        <div className="form-container">
+          <div className="container">
+            {taskId ? <h1>Update Task</h1> : <h1>Add Task</h1>}
+            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              <div className="mb-3">
+                <label htmlFor="title" className="form-label">
+                  Title
+                </label>
+                <input
+                  required={true}
+                  type="text"
+                  className="form-control"
+                  id="title"
+                  value={title}
+                  onChange={handleTitleChange}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="dueDate" className="form-label">
+                  Due Date
+                </label>
+                <input
+                  required={true}
+                  type="date"
+                  className="form-control"
+                  id="dueDate"
+                  value={dueDate}
+                  onChange={handleDueDateChange}
+                />
+              </div>
 
-            <div className="mb-3">
-              <label htmlFor="prio" className="form-label">
-                Priority
-              </label>
-              <select
-                required={true}
-                onChange={handlePrioChange}
-                id="prio"
-                className="form-select"
-                aria-label="Priority"
-                value={prio}
-              >
-                <option value="none">No Priority</option>
-                <option value="low">Low</option>
-                <option value="med">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
+              <div className="mb-3">
+                <label htmlFor="prio" className="form-label">
+                  Priority
+                </label>
+                <select
+                  required={true}
+                  onChange={handlePrioChange}
+                  id="prio"
+                  className="form-select"
+                  aria-label="Priority"
+                  value={prio}
+                >
+                  <option value="none">No Priority</option>
+                  <option value="low">Low</option>
+                  <option value="med">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
 
-            <div className="mb-3">
-              <label htmlFor="label" className="form-label">
-                Label
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="label"
-                value={label}
-                onChange={handleLabelChange}
-              />
-            </div>
+              <div className="mb-3">
+                <label htmlFor="label" className="form-label">
+                  Label
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="label"
+                  value={label}
+                  onChange={handleLabelChange}
+                />
+              </div>
 
-            <div className="mb-3">
-              <label htmlFor="desc" className="form-label">
-                Description
-              </label>
-              <textarea
-                rows={5}
-                className="form-control"
-                id="desc"
-                value={desc}
-                onChange={handleDescChange}
-              />
-            </div>
+              <div className="mb-3">
+                <label htmlFor="desc" className="form-label">
+                  Description
+                </label>
+                <textarea
+                  rows={5}
+                  className="form-control"
+                  id="desc"
+                  value={desc}
+                  onChange={handleDescChange}
+                />
+              </div>
 
-            {errors.length > 0 && (
-              <ul>
-                {errors.map((error) => {
-                  return (
-                    <li key={uuidv4()} className="text-danger">
-                      {error.msg}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-          </form>
+              {errors.length > 0 && (
+                <ul>
+                  {errors.map((error) => {
+                    return (
+                      <li key={uuidv4()} className="text-danger">
+                        {error.msg}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              <button type="submit" className="btn btn-primary">
+                Submit
+              </button>
+            </form>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
