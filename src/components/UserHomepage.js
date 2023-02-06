@@ -1,11 +1,12 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { Link } from "react-router-dom";
 
 const UserHomepage = () => {
   const [tasks, setTasks] = useState();
   const [labels, setLabels] = useState([]);
-  const [title, setTitle] = useState("Today");
+  const [title, setTitle] = useState("All Tasks");
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ const UserHomepage = () => {
 
       setTasks(tasks);
       setLabels(labels.taskLabels);
+      setTitle("All Tasks");
       setLoading(false);
     }
   };
@@ -93,8 +95,6 @@ const UserHomepage = () => {
   };
 
   const sortTasksByPrio = async (prio) => {
-    setLoading(true);
-
     switch (prio) {
       case "low":
         setTitle("Priority: Low");
@@ -109,7 +109,7 @@ const UserHomepage = () => {
         setTitle("No Priority");
         break;
       default:
-        setTitle("Today");
+        setTitle("All Tasks");
     }
 
     const tasksRes = await fetch(
@@ -122,13 +122,12 @@ const UserHomepage = () => {
     );
 
     if (tasksRes.status === 401) {
-      return navigate("/");
+      navigate("/");
     }
 
     const tasks = await tasksRes.json();
     setTasks(tasks);
     setLoading(false);
-    return;
   };
 
   const formatDate = (date) => {
@@ -164,6 +163,7 @@ const UserHomepage = () => {
     } else {
       const tasks = await tasksRes.json();
       setTasks(tasks);
+      setTitle(`${new Date(date).toDateString()}`);
       setLoading(false);
     }
   };
@@ -174,7 +174,6 @@ const UserHomepage = () => {
   };
 
   const sortTasksByLabel = async (label) => {
-    console.log(label);
     const tasksRes = await fetch(
       `http://localhost:5000/taskaid/tasks/by-label/${label}`,
       {
@@ -189,8 +188,18 @@ const UserHomepage = () => {
     } else {
       const tasks = await tasksRes.json();
       setTasks(tasks);
+      setTitle(`Label: ${label}`);
       setLoading(false);
     }
+  };
+
+  const completeTask = async (taskId) => {
+    await fetch(`http://localhost:5000/taskaid/task/delete/${taskId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    getData();
   };
 
   if (loading) {
@@ -200,6 +209,16 @@ const UserHomepage = () => {
     <div className="flex-grow-1 position-relative d-flex">
       <div className="sidebar">
         <div className="container mt-4 ms-3">
+          <h4>
+            <button
+              className="sidebar-btn"
+              onClick={() => {
+                getData();
+              }}
+            >
+              All Tasks
+            </button>
+          </h4>
           <h4>
             <button
               className="sidebar-btn"
@@ -287,9 +306,18 @@ const UserHomepage = () => {
           </div>
 
           <div className="dropdown-content label-options">
-            <button>Link 1</button>
-            <button>Link 2</button>
-            <button>Link 3</button>
+            {labels.map((label) => {
+              return (
+                <button
+                  key={uuidv4()}
+                  onClick={() => {
+                    sortTasksByLabel(label);
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
           <div className="filter-options">
             <div className="dropdown">
@@ -308,40 +336,72 @@ const UserHomepage = () => {
           </div>
         </div>
         <div className="container mt-4">
-          {tasks.map((task) => {
-            return (
-              <div class="card d-flex flex-row">
-                <div className="task-check-body ms-2">
-                  <div
-                    className={
-                      task.priority === "low"
-                        ? "task-check prio-low"
-                        : task.priority === "med"
-                        ? "task-check prio-med"
-                        : task.priority === "high"
-                        ? "task-check prio-high"
-                        : "task-check"
-                    }
-                  ></div>
-                </div>
-                <div class="card-body">
-                  <div className="d-flex justify-content-between">
-                    <h5 class="card-title">{task.title}</h5>
-                    <h5 class="card-title">{task.label}</h5>
+          {tasks.length > 0 ? (
+            tasks.map((task) => {
+              return (
+                <div
+                  className={
+                    task.priority === "low"
+                      ? "card d-flex flex-row mb-3 prio-low-card"
+                      : task.priority === "med"
+                      ? "card d-flex flex-row mb-3 prio-med-card"
+                      : task.priority === "high"
+                      ? "card d-flex flex-row mb-3 prio-high-card"
+                      : "card d-flex flex-row mb-3"
+                  }
+                  key={task._id}
+                >
+                  <div className="task-check-body ms-2">
+                    <div
+                      onClick={() => {
+                        completeTask(task._id);
+                      }}
+                      className={
+                        task.priority === "low"
+                          ? "task-check prio-low"
+                          : task.priority === "med"
+                          ? "task-check prio-med"
+                          : task.priority === "high"
+                          ? "task-check prio-high"
+                          : "task-check"
+                      }
+                    ></div>
                   </div>
-                  {task.desc !== "" ? (
-                    <p class="card-text">{task.desc}</p>
-                  ) : (
-                    <p class="card-text">No task description</p>
-                  )}
-                  <h6 class="card-subtitle mb-0 text-muted">
-                    Due date: {task.dueDate}
-                  </h6>
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between">
+                      <h5 className="card-title">{task.title}</h5>
+                      <h5 className="card-title">{task.label}</h5>
+                    </div>
+                    {task.desc !== "" ? (
+                      <p className="card-text">{task.desc}</p>
+                    ) : (
+                      <p className="card-text">No task description</p>
+                    )}
+                    <h6 className="card-subtitle mb-0 text-muted">
+                      Due date: {task.dueDate}
+                    </h6>
+                    <Link
+                      to={`/taskaid/update-task/${task._id}`}
+                      className="update-btn"
+                      state={{ labels: labels }}
+                    >
+                      Update
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <h3>No Tasks</h3>
+          )}
         </div>
+        <Link
+          to="/taskaid/create-task"
+          className="btn-outline-primary btn"
+          state={{ labels: labels }}
+        >
+          Add Task
+        </Link>
       </div>
     </div>
   );
