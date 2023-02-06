@@ -397,7 +397,7 @@ const UserHomepage = () => {
         </div>
         <Link
           to="/taskaid/create-task"
-          className="btn-outline-primary btn"
+          className="btn-outline-primary btn mb-2"
           state={{ labels: labels }}
         >
           Add Task

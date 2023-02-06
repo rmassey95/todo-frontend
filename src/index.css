@@ -200,6 +200,14 @@
   cursor: pointer;
 }
 
+.footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: rgba(192, 192, 192, 0.15);
+}
+
 .show-content {
   display: block;
 }
