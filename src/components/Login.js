@@ -24,11 +24,11 @@ const Login = () => {
     });
 
     if (res.status === 200) {
-      return navigate("/taskaid");
+      navigate("/taskaid");
     }
 
     const resData = await res.json();
-    return setError(resData.msg);
+    setError(resData.msg);
   };
 
   const handleUsernameChange = (e) => {

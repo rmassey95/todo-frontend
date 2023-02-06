@@ -38,11 +38,11 @@ const Login = () => {
     });
 
     if (res.status === 200) {
-      return navigate("/taskaid/login");
+      navigate("/taskaid/login");
     }
 
     const resData = await res.json();
-    return setError(resData);
+    setError(resData);
   };
 
   return (

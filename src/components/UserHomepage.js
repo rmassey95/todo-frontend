@@ -2,10 +2,14 @@ import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Link } from "react-router-dom";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
 
 const UserHomepage = () => {
   const [tasks, setTasks] = useState();
   const [labels, setLabels] = useState([]);
+  const [selectDate, setSelectDate] = useState(false);
   const [title, setTitle] = useState("All Tasks");
   const [loading, setLoading] = useState(true);
 
@@ -28,19 +32,20 @@ const UserHomepage = () => {
   };
 
   const getData = async () => {
+    setLoading(true);
+    setSelectDate(false);
     let [tasksRes, labelRes] = await Promise.all([getTasks(), getLabels()]);
 
     if (tasksRes.status === 401 || labelRes.status === 401) {
       navigate("/");
-    } else {
-      const tasks = await tasksRes.json();
-      const labels = await labelRes.json();
-
-      setTasks(tasks);
-      setLabels(labels.taskLabels);
-      setTitle("All Tasks");
-      setLoading(false);
     }
+    const tasks = await tasksRes.json();
+    const labels = await labelRes.json();
+
+    setTasks(tasks);
+    setLabels(labels.taskLabels);
+    setTitle("All Tasks");
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -95,6 +100,7 @@ const UserHomepage = () => {
   };
 
   const sortTasksByPrio = async (prio) => {
+    setLoading(true);
     switch (prio) {
       case "low":
         setTitle("Priority: Low");
@@ -147,7 +153,12 @@ const UserHomepage = () => {
   };
 
   const sortTasksByDay = async (date) => {
-    const formattedDate = formatDate(date);
+    setSelectDate(false);
+    setLoading(true);
+    let formattedDate = date;
+    if (typeof formattedDate === "object") {
+      formattedDate = formatDate(date);
+    }
 
     const tasksRes = await fetch(
       `http://localhost:5000/taskaid/tasks/by-date/${formattedDate}`,
@@ -160,12 +171,15 @@ const UserHomepage = () => {
 
     if (tasksRes.status === 401) {
       navigate("/");
-    } else {
-      const tasks = await tasksRes.json();
-      setTasks(tasks);
-      setTitle(`${new Date(date).toDateString()}`);
-      setLoading(false);
     }
+    const tasks = await tasksRes.json();
+    setTasks(tasks);
+    setTitle(`${new Date(date).toDateString()}`);
+    setLoading(false);
+  };
+
+  const handleDateSelect = (selectInfo) => {
+    sortTasksByDay(selectInfo.startStr);
   };
 
   const toggleLabels = () => {
@@ -174,6 +188,8 @@ const UserHomepage = () => {
   };
 
   const sortTasksByLabel = async (label) => {
+    setLoading(true);
+    setSelectDate(false);
     const tasksRes = await fetch(
       `http://localhost:5000/taskaid/tasks/by-label/${label}`,
       {
@@ -185,15 +201,15 @@ const UserHomepage = () => {
 
     if (tasksRes.status === 401) {
       navigate("/");
-    } else {
-      const tasks = await tasksRes.json();
-      setTasks(tasks);
-      setTitle(`Label: ${label}`);
-      setLoading(false);
     }
+    const tasks = await tasksRes.json();
+    setTasks(tasks);
+    setTitle(`Label: ${label}`);
+    setLoading(false);
   };
 
   const completeTask = async (taskId) => {
+    setLoading(true);
     await fetch(`http://localhost:5000/taskaid/task/delete/${taskId}`, {
       method: "DELETE",
       credentials: "include",
@@ -202,8 +218,72 @@ const UserHomepage = () => {
     getData();
   };
 
+  const chooseDate = () => {
+    setSelectDate(true);
+  };
+
   if (loading) {
-    return <div className="loading"></div>;
+    return (
+      <div className="flex-grow-1 position-relative d-flex">
+        <div className="sidebar">
+          <div className="container mt-4 ms-3">
+            <h4>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  getData();
+                }}
+              >
+                All Tasks
+              </button>
+            </h4>
+            <h4>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  sortTasksByDay(new Date());
+                }}
+              >
+                Today
+              </button>
+            </h4>
+            <h4>
+              <button className="sidebar-btn" onClick={chooseDate}>
+                Upcoming
+              </button>
+            </h4>
+            <h4>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  toggleLabels();
+                }}
+              >
+                Labels
+              </button>
+            </h4>
+            <div className="sidebar-labels">
+              <p className="ms-3 ">
+                {labels.map((label) => {
+                  return (
+                    <button
+                      key={uuidv4()}
+                      className="sidebar-btn d-block"
+                      onClick={() => {
+                        sortTasksByLabel(label);
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="container loading"></div>
+      </div>
+    );
   }
   return (
     <div className="flex-grow-1 position-relative d-flex">
@@ -230,7 +310,9 @@ const UserHomepage = () => {
             </button>
           </h4>
           <h4>
-            <button className="sidebar-btn">Upcoming</button>
+            <button className="sidebar-btn" onClick={chooseDate}>
+              Upcoming
+            </button>
           </h4>
           <h4>
             <button
@@ -261,148 +343,162 @@ const UserHomepage = () => {
           </div>
         </div>
       </div>
-      <div className="container">
-        <div className="d-flex align-items-center justify-content-between mt-3 ms-3 me-3 pb-2 border-bottom">
-          <h2 style={{ margin: 0 }}>{title}</h2>
-          <div className="text-end">
-            <button onClick={dropdown} className="dropbtn-filter">
-              Filter
-            </button>
-          </div>
+      {selectDate ? (
+        <div className="container mt-2 mb-2">
+          <FullCalendar
+            plugins={[dayGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            selectable={true}
+            select={handleDateSelect}
+          />
         </div>
-        <div
-          className="position-absolute me-3 end-0 d-flex"
-          onMouseLeave={optionsMouseLeave}
-        >
-          <div className="dropdown-content prio-options">
-            <button
-              onClick={() => {
-                sortTasksByPrio("low");
-              }}
-            >
-              Low
-            </button>
-            <button
-              onClick={() => {
-                sortTasksByPrio("med");
-              }}
-            >
-              Medium
-            </button>
-            <button
-              onClick={() => {
-                sortTasksByPrio("high");
-              }}
-            >
-              High
-            </button>
-            <button
-              onClick={() => {
-                sortTasksByPrio("none");
-              }}
-            >
-              None
-            </button>
-          </div>
-
-          <div className="dropdown-content label-options">
-            {labels.map((label) => {
-              return (
-                <button
-                  key={uuidv4()}
-                  onClick={() => {
-                    sortTasksByLabel(label);
-                  }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-          <div className="filter-options">
-            <div className="dropdown">
-              <button className="dropbtn prio-btn" onMouseOver={prioMouseOver}>
-                By Priority
+      ) : (
+        <div className="container">
+          <div className="d-flex align-items-center justify-content-between mt-3 ms-3 me-3 pb-2 border-bottom">
+            <h2 style={{ margin: 0 }}>{title}</h2>
+            <div className="text-end">
+              <button onClick={dropdown} className="dropbtn-filter">
+                Filter
               </button>
             </div>
-            <div className="dropdown">
+          </div>
+          <div
+            className="position-absolute me-3 end-0 d-flex"
+            onMouseLeave={optionsMouseLeave}
+          >
+            <div className="dropdown-content prio-options">
               <button
-                className="dropbtn label-btn"
-                onMouseOver={labelMouseOver}
+                onClick={() => {
+                  sortTasksByPrio("low");
+                }}
               >
-                By Label
+                Low
+              </button>
+              <button
+                onClick={() => {
+                  sortTasksByPrio("med");
+                }}
+              >
+                Medium
+              </button>
+              <button
+                onClick={() => {
+                  sortTasksByPrio("high");
+                }}
+              >
+                High
+              </button>
+              <button
+                onClick={() => {
+                  sortTasksByPrio("none");
+                }}
+              >
+                None
               </button>
             </div>
-          </div>
-        </div>
-        <div className="container mt-4">
-          {tasks.length > 0 ? (
-            tasks.map((task) => {
-              return (
-                <div
-                  className={
-                    task.priority === "low"
-                      ? "card d-flex flex-row mb-3 prio-low-card"
-                      : task.priority === "med"
-                      ? "card d-flex flex-row mb-3 prio-med-card"
-                      : task.priority === "high"
-                      ? "card d-flex flex-row mb-3 prio-high-card"
-                      : "card d-flex flex-row mb-3"
-                  }
-                  key={task._id}
+
+            <div className="dropdown-content label-options">
+              {labels.map((label) => {
+                return (
+                  <button
+                    key={uuidv4()}
+                    onClick={() => {
+                      sortTasksByLabel(label);
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="filter-options">
+              <div className="dropdown">
+                <button
+                  className="dropbtn prio-btn"
+                  onMouseOver={prioMouseOver}
                 >
-                  <div className="task-check-body ms-2">
-                    <div
-                      onClick={() => {
-                        completeTask(task._id);
-                      }}
-                      className={
-                        task.priority === "low"
-                          ? "task-check prio-low"
-                          : task.priority === "med"
-                          ? "task-check prio-med"
-                          : task.priority === "high"
-                          ? "task-check prio-high"
-                          : "task-check"
-                      }
-                    ></div>
-                  </div>
-                  <div className="card-body">
-                    <div className="d-flex justify-content-between">
-                      <h5 className="card-title">{task.title}</h5>
-                      <h5 className="card-title">{task.label}</h5>
+                  By Priority
+                </button>
+              </div>
+              <div className="dropdown">
+                <button
+                  className="dropbtn label-btn"
+                  onMouseOver={labelMouseOver}
+                >
+                  By Label
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="container mt-4">
+            {tasks.length > 0 ? (
+              tasks.map((task) => {
+                return (
+                  <div
+                    className={
+                      task.priority === "low"
+                        ? "card d-flex flex-row mb-3 prio-low-card"
+                        : task.priority === "med"
+                        ? "card d-flex flex-row mb-3 prio-med-card"
+                        : task.priority === "high"
+                        ? "card d-flex flex-row mb-3 prio-high-card"
+                        : "card d-flex flex-row mb-3"
+                    }
+                    key={task._id}
+                  >
+                    <div className="task-check-body ms-2">
+                      <div
+                        onClick={() => {
+                          completeTask(task._id);
+                        }}
+                        className={
+                          task.priority === "low"
+                            ? "task-check prio-low"
+                            : task.priority === "med"
+                            ? "task-check prio-med"
+                            : task.priority === "high"
+                            ? "task-check prio-high"
+                            : "task-check"
+                        }
+                      ></div>
                     </div>
-                    {task.desc !== "" ? (
-                      <p className="card-text">{task.desc}</p>
-                    ) : (
-                      <p className="card-text">No task description</p>
-                    )}
-                    <h6 className="card-subtitle mb-0 text-muted">
-                      Due date: {task.dueDate}
-                    </h6>
-                    <Link
-                      to={`/taskaid/update-task/${task._id}`}
-                      className="update-btn"
-                      state={{ labels: labels }}
-                    >
-                      Update
-                    </Link>
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between">
+                        <h5 className="card-title">{task.title}</h5>
+                        <h5 className="card-title">{task.label}</h5>
+                      </div>
+                      {task.desc !== "" ? (
+                        <p className="card-text">{task.desc}</p>
+                      ) : (
+                        <p className="card-text">No task description</p>
+                      )}
+                      <h6 className="card-subtitle mb-0 text-muted">
+                        Due date: {task.dueDate}
+                      </h6>
+                      <Link
+                        to={`/taskaid/update-task/${task._id}`}
+                        className="update-btn"
+                        state={{ labels: labels }}
+                      >
+                        Update
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          ) : (
-            <h3>No Tasks</h3>
-          )}
+                );
+              })
+            ) : (
+              <h3>No Tasks</h3>
+            )}
+          </div>
+          <Link
+            to="/taskaid/create-task"
+            className="btn-outline-primary btn mb-2"
+            state={{ labels: labels }}
+          >
+            Add Task
+          </Link>
         </div>
-        <Link
-          to="/taskaid/create-task"
-          className="btn-outline-primary btn mb-2"
-          state={{ labels: labels }}
-        >
-          Add Task
-        </Link>
-      </div>
+      )}
     </div>
   );
 };
