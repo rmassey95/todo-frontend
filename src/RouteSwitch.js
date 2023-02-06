@@ -9,7 +9,6 @@ import UserInfo from "./components/UserInfo";
 const RouteSwitch = () => {
   return (
     <BrowserRouter>
-      {/* <Navbar /> */}
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/taskaid/signup" element={<Signup />} />
@@ -19,7 +18,6 @@ const RouteSwitch = () => {
         <Route path="/taskaid/update-task/:taskId" element={<TaskForm />} />
         <Route path="/taskaid/user/info" element={<UserInfo />} />
       </Routes>
-      {/* <Footer /> */}
     </BrowserRouter>
   );
 };

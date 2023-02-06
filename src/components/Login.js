@@ -10,9 +10,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const sendData = async () => {
     const res = await fetch("http://localhost:5000/taskaid/login", {
       method: "POST",
       credentials: "include",
@@ -33,12 +31,23 @@ const Login = () => {
     setError(resData.msg);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    sendData();
+  };
+
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+  };
+
+  const guestLogin = () => {
+    setUsername("Guest");
+    setPassword("Guest123.");
   };
 
   return (
@@ -82,6 +91,15 @@ const Login = () => {
               Login
             </button>
           </form>
+          <div className="mt-4">
+            <p style={{ margin: "0" }}>
+              Or click the button below to enter guest information then select
+              "Login"
+            </p>
+            <button onClick={guestLogin} className="btn btn-outline-secondary">
+              Guest View
+            </button>
+          </div>
         </div>
       </div>
       <Footer />
