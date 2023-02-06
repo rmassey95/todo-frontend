@@ -139,8 +139,13 @@
 }
 
 .sidebar-btn {
+  text-align: left;
   border: none;
   background-color: transparent;
+  color: white;
+}
+
+.sidebar-li {
   color: white;
 }
 

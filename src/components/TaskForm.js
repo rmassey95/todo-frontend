@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
@@ -14,7 +14,11 @@ const TaskForm = () => {
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [labels, setLabels] = useState([]);
+  const [oldLabel, setOldLabel] = useState();
 
+  const location = useLocation();
+
+  const { tasks } = location.state;
   const { taskId } = useParams();
   const navigate = useNavigate();
 
@@ -40,7 +44,7 @@ const TaskForm = () => {
 
   const checkStatus = async (res) => {
     if (res.status === 200) {
-      if (!labels.includes(label)) {
+      if (!labels.includes(label === "" ? "No Label" : label)) {
         await fetch(`http://localhost:5000/taskaid/user/add-label/${label}`, {
           method: "POST",
           credentials: "include",
@@ -74,6 +78,14 @@ const TaskForm = () => {
           }),
         }
       );
+      if (oldLabel !== label) {
+        if (tasks.filter((task) => task.label === oldLabel).length === 1) {
+          await fetch(
+            `http://localhost:5000/taskaid/user/remove-label/${oldLabel}`,
+            { method: "PUT", credentials: "include" }
+          );
+        }
+      }
       checkStatus(res);
     } else {
       const res = await fetch("http://localhost:5000/taskaid/task/create", {
@@ -116,6 +128,7 @@ const TaskForm = () => {
     setTitle(task.title);
     setDueDate(task.dueDate);
     setLabel(task.label);
+    setOldLabel(task.label);
     setDesc(task.desc);
     setPrio(task.priority);
     setLoading(false);

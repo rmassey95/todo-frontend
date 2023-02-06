@@ -275,21 +275,23 @@ const UserHomepage = () => {
                 </button>
               </h4>
               <div className="sidebar-labels">
-                <p className="ms-3 ">
+                <ul>
                   {labels.map((label) => {
                     return (
-                      <button
-                        key={uuidv4()}
-                        className="sidebar-btn d-block"
-                        onClick={() => {
-                          sortTasksByLabel(label);
-                        }}
-                      >
-                        {label}
-                      </button>
+                      <li className="sidebar-li">
+                        <button
+                          key={uuidv4()}
+                          className="sidebar-btn d-block"
+                          onClick={() => {
+                            sortTasksByLabel(label);
+                          }}
+                        >
+                          {label}
+                        </button>
+                      </li>
                     );
                   })}
-                </p>
+                </ul>
               </div>
             </div>
           </div>
@@ -341,21 +343,23 @@ const UserHomepage = () => {
               </button>
             </h4>
             <div className="sidebar-labels">
-              <p className="ms-3 ">
+              <ul>
                 {labels.map((label) => {
                   return (
-                    <button
-                      key={uuidv4()}
-                      className="sidebar-btn d-block"
-                      onClick={() => {
-                        sortTasksByLabel(label);
-                      }}
-                    >
-                      {label}
-                    </button>
+                    <li className="sidebar-li">
+                      <button
+                        key={uuidv4()}
+                        className="sidebar-btn d-block"
+                        onClick={() => {
+                          sortTasksByLabel(label);
+                        }}
+                      >
+                        {label}
+                      </button>
+                    </li>
                   );
                 })}
-              </p>
+              </ul>
             </div>
           </div>
         </div>
@@ -481,7 +485,7 @@ const UserHomepage = () => {
                       <div className="card-body">
                         <div className="d-flex justify-content-between">
                           <h5 className="card-title">{task.title}</h5>
-                          <h5 className="card-title">{task.label}</h5>
+                          <h5 className="card-title ms-3">{task.label}</h5>
                         </div>
                         {task.desc !== "" ? (
                           <p className="card-text">{task.desc}</p>
@@ -494,7 +498,7 @@ const UserHomepage = () => {
                         <Link
                           to={`/taskaid/update-task/${task._id}`}
                           className="update-btn"
-                          state={{ labels: labels }}
+                          state={{ tasks }}
                         >
                           Update
                         </Link>
@@ -509,6 +513,7 @@ const UserHomepage = () => {
             <Link
               to="/taskaid/create-task"
               className="btn-outline-primary btn mb-2"
+              state={{ tasks }}
             >
               Add Task
             </Link>
