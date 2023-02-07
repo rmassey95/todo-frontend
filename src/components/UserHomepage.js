@@ -7,6 +7,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Sidebar from "./Sidebar";
 
 const UserHomepage = () => {
   const [tasks, setTasks] = useState();
@@ -33,6 +34,7 @@ const UserHomepage = () => {
     });
   };
 
+  // Get tasks and labels associated with user
   const getData = async () => {
     setLoading(true);
     setSelectDate(false);
@@ -52,6 +54,7 @@ const UserHomepage = () => {
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const dropdown = () => {
@@ -138,6 +141,7 @@ const UserHomepage = () => {
     setLoading(false);
   };
 
+  // Used to format date to send to backend for query
   const formatDate = (date) => {
     const d = new Date(date);
     let month = "" + (d.getMonth() + 1);
@@ -154,6 +158,30 @@ const UserHomepage = () => {
     return [year, month, day].join("-");
   };
 
+  const dateTitle = (date) => {
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "June",
+      "July",
+      "Aug",
+      "Sept",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const days = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"];
+
+    const d = new Date(date);
+
+    return `${days[d.getDay()]} ${monthNames[d.getMonth()]} ${
+      d.getDate() + 1
+    }, ${d.getFullYear()}`;
+  };
+
   const sortTasksByDay = async (date) => {
     setSelectDate(false);
     setLoading(true);
@@ -162,11 +190,12 @@ const UserHomepage = () => {
       formattedDate = formatDate(date);
     }
 
+    const title = dateTitle(formattedDate);
+
     const tasksRes = await fetch(
       `http://localhost:5000/taskaid/tasks/by-date/${formattedDate}`,
       {
         method: "GET",
-        // credentials set to include allows cookies to be passed through request
         credentials: "include",
       }
     );
@@ -176,17 +205,21 @@ const UserHomepage = () => {
     }
     const tasks = await tasksRes.json();
     setTasks(tasks);
-    setTitle(`${new Date(date).toDateString()}`);
+    setTitle(title);
     setLoading(false);
   };
 
   const handleDateSelect = (selectInfo) => {
-    sortTasksByDay(selectInfo.startStr);
+    sortTasksByDay(selectInfo.dateStr);
   };
 
   const toggleLabels = () => {
     const labels = document.querySelector(".sidebar-labels");
     labels.classList.toggle("show-content");
+  };
+
+  const toggleMobileLabels = () => {
+    document.querySelector(".mobile-labels").classList.toggle("show-content");
   };
 
   const sortTasksByLabel = async (label) => {
@@ -213,6 +246,8 @@ const UserHomepage = () => {
   const completeTask = async (taskId, taskLabel) => {
     setLoading(true);
 
+    // If the task is the only one for the user, before deleting we remove that
+    // label from user labels
     if (tasks.filter((task) => task.label === taskLabel).length === 1) {
       await fetch(
         `http://localhost:5000/taskaid/user/remove-label/${taskLabel}`,
@@ -232,69 +267,26 @@ const UserHomepage = () => {
     setSelectDate(true);
   };
 
+  const toggleMobileSidebar = () => {
+    document.querySelector(".mobile-sidebar-btn").classList.toggle("change");
+    document
+      .querySelector(".mobile-sidebar-options")
+      .classList.toggle("mobile-sidebar-show");
+  };
+
   if (loading) {
     return (
       <div className="main">
         <Navbar />
         <div className="flex-grow-1 position-relative d-flex">
-          <div className="sidebar">
-            <div className="container mt-4 ms-3">
-              <h4>
-                <button
-                  className="sidebar-btn"
-                  onClick={() => {
-                    getData();
-                  }}
-                >
-                  All Tasks
-                </button>
-              </h4>
-              <h4>
-                <button
-                  className="sidebar-btn"
-                  onClick={() => {
-                    sortTasksByDay(new Date());
-                  }}
-                >
-                  Today
-                </button>
-              </h4>
-              <h4>
-                <button className="sidebar-btn" onClick={chooseDate}>
-                  Upcoming
-                </button>
-              </h4>
-              <h4>
-                <button
-                  className="sidebar-btn"
-                  onClick={() => {
-                    toggleLabels();
-                  }}
-                >
-                  Labels
-                </button>
-              </h4>
-              <div className="sidebar-labels">
-                <ul>
-                  {labels.map((label) => {
-                    return (
-                      <li className="sidebar-li">
-                        <button
-                          key={uuidv4()}
-                          className="sidebar-btn d-block"
-                          onClick={() => {
-                            sortTasksByLabel(label);
-                          }}
-                        >
-                          {label}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
-          </div>
+          <Sidebar
+            getData={getData}
+            sortTasksByDay={sortTasksByDay}
+            chooseDate={chooseDate}
+            toggleLabels={toggleLabels}
+            sortTasksByLabel={sortTasksByLabel}
+            labels={labels}
+          />
           <div className="container loading"></div>
         </div>
         <Footer />
@@ -305,71 +297,20 @@ const UserHomepage = () => {
     <div className="main">
       <Navbar />
       <div className="flex-grow-1 position-relative d-flex">
-        <div className="sidebar">
-          <div className="container mt-4 ms-3">
-            <h4>
-              <button
-                className="sidebar-btn"
-                onClick={() => {
-                  getData();
-                }}
-              >
-                All Tasks
-              </button>
-            </h4>
-            <h4>
-              <button
-                className="sidebar-btn"
-                onClick={() => {
-                  sortTasksByDay(new Date());
-                }}
-              >
-                Today
-              </button>
-            </h4>
-            <h4>
-              <button className="sidebar-btn" onClick={chooseDate}>
-                Upcoming
-              </button>
-            </h4>
-            <h4>
-              <button
-                className="sidebar-btn"
-                onClick={() => {
-                  toggleLabels();
-                }}
-              >
-                Labels
-              </button>
-            </h4>
-            <div className="sidebar-labels">
-              <ul>
-                {labels.map((label) => {
-                  return (
-                    <li className="sidebar-li">
-                      <button
-                        key={uuidv4()}
-                        className="sidebar-btn d-block"
-                        onClick={() => {
-                          sortTasksByLabel(label);
-                        }}
-                      >
-                        {label}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-        </div>
+        <Sidebar
+          getData={getData}
+          sortTasksByDay={sortTasksByDay}
+          chooseDate={chooseDate}
+          toggleLabels={toggleLabels}
+          sortTasksByLabel={sortTasksByLabel}
+          labels={labels}
+        />
         {selectDate ? (
           <div className="container mt-2 mb-2">
             <FullCalendar
               plugins={[dayGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
-              selectable={true}
-              select={handleDateSelect}
+              dateClick={handleDateSelect}
             />
           </div>
         ) : (
@@ -519,6 +460,51 @@ const UserHomepage = () => {
             </Link>
           </div>
         )}
+      </div>
+      <div
+        onClick={toggleMobileSidebar}
+        className="mobile-sidebar-btn position-fixed bottom-0 end-0"
+      >
+        <div className="bar1"></div>
+        <div className="bar2"></div>
+        <div className="bar3"></div>
+      </div>
+      <div className="position-fixed mobile-sidebar-options end-0">
+        <button className="sidebar-btn" onClick={getData}>
+          All Tasks
+        </button>
+        <button
+          className="sidebar-btn"
+          onClick={() => {
+            sortTasksByDay(new Date());
+          }}
+        >
+          Today
+        </button>
+        <button className="sidebar-btn" onClick={chooseDate}>
+          Upcoming
+        </button>
+        <button className="sidebar-btn" onClick={toggleMobileLabels}>
+          Labels
+        </button>
+        <div className="mobile-labels">
+          <ul>
+            {labels.map((label) => {
+              return (
+                <li key={uuidv4()} className="sidebar-li">
+                  <button
+                    className="sidebar-btn d-block"
+                    onClick={() => {
+                      sortTasksByLabel(label);
+                    }}
+                  >
+                    {label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
       <Footer />
     </div>

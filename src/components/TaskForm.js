@@ -18,8 +18,10 @@ const TaskForm = () => {
 
   const location = useLocation();
 
+  // Only required for updating a task
   const { tasks } = location.state;
   const { taskId } = useParams();
+
   const navigate = useNavigate();
 
   const handleTitleChange = (e) => {
@@ -42,6 +44,7 @@ const TaskForm = () => {
     setPrio(e.target.value);
   };
 
+  // check the res status and add label if its new
   const checkStatus = async (res) => {
     if (res.status === 200) {
       if (!labels.includes(label === "" ? "No Label" : label)) {
@@ -61,6 +64,7 @@ const TaskForm = () => {
     e.preventDefault();
 
     if (taskId) {
+      // update existing task
       const res = await fetch(
         `http://localhost:5000/taskaid/task/update/${taskId}`,
         {
@@ -88,6 +92,7 @@ const TaskForm = () => {
       }
       checkStatus(res);
     } else {
+      // create new task
       const res = await fetch("http://localhost:5000/taskaid/task/create", {
         method: "POST",
         credentials: "include",
@@ -106,6 +111,7 @@ const TaskForm = () => {
     }
   };
 
+  // Get all labels a user has used
   const getLabels = async () => {
     const res = await fetch("http://localhost:5000/taskaid/user/labels", {
       method: "GET",
@@ -117,6 +123,7 @@ const TaskForm = () => {
     setLabels(labelsRes.taskLabels);
   };
 
+  // Get task that will be updated
   const getTask = async () => {
     const res = await fetch(`http://localhost:5000/taskaid/task/${taskId}`, {
       method: "GET",
@@ -135,6 +142,7 @@ const TaskForm = () => {
   };
 
   useEffect(() => {
+    // Check if we are updating a task
     if (taskId) {
       setLoading(true);
       getTask();
@@ -235,7 +243,7 @@ const TaskForm = () => {
                   })}
                 </ul>
               )}
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" className="btn btn-primary mb-2">
                 Submit
               </button>
             </form>

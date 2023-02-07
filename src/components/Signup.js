@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 const { v4: uuidv4 } = require("uuid");
 
-const Login = () => {
+const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
@@ -27,7 +27,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/taskaid/signup", {
+    // Send POST req to backend with username and pw details
+    const signupRes = await fetch("http://localhost:5000/taskaid/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,11 +40,13 @@ const Login = () => {
       }),
     });
 
-    if (res.status === 200) {
+    // Successful signup
+    if (signupRes.status === 200) {
       navigate("/taskaid/login");
     }
 
-    const resData = await res.json();
+    // Failed signup, error messages will be displayed
+    const resData = await signupRes.json();
     setError(resData);
   };
 
@@ -95,6 +98,7 @@ const Login = () => {
                 onChange={handleConfPasswordChange}
               />
             </div>
+            {/* Display signup errors if any are present */}
             {error.error && (
               <ul>
                 {error.errorMsgs.map((errorMsg) => {
@@ -117,4 +121,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

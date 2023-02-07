@@ -10,8 +10,11 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const sendData = async () => {
-    const res = await fetch("http://localhost:5000/taskaid/login", {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Send login POST req to backend
+    const loginRes = await fetch("http://localhost:5000/taskaid/login", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -23,18 +26,14 @@ const Login = () => {
       }),
     });
 
-    if (res.status === 200) {
+    if (loginRes.status === 200) {
+      // success, go to main page
       navigate("/taskaid");
     }
 
-    const resData = await res.json();
+    // Fail to login, send error msg to user
+    const resData = await loginRes.json();
     setError(resData.msg);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    sendData();
   };
 
   const handleUsernameChange = (e) => {
@@ -45,6 +44,8 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
+  // Useful for those that don't want to create
+  // an account and just want to view the website.
   const guestLogin = () => {
     setUsername("Guest");
     setPassword("Guest123.");

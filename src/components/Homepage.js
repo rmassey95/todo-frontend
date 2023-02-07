@@ -1,6 +1,5 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-const { React } = require("react");
 
 const Homepage = () => {
   return (

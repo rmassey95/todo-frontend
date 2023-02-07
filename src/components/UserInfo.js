@@ -10,6 +10,7 @@ const UserInfo = () => {
 
   const navigate = useNavigate();
 
+  // Get user info from backend
   const getUser = async () => {
     const res = await fetch("http://localhost:5000/taskaid/login/status", {
       method: "GET",
@@ -69,7 +70,7 @@ const UserInfo = () => {
       <div className="container flex-grow-1 d-flex flex-column justify-content-center">
         <h2>Welcome, {user.username}</h2>
         <div className="d-flex mt-2 ms-3" style={{ width: "100%" }}>
-          <h4>Profile image: </h4>
+          <h4 className="profile-img-header">Profile image: </h4>
           <img
             className="ms-4 user-profile-img"
             src={user.profileImg}

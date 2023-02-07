@@ -1,6 +1,6 @@
 import addBtnImg from "../img/icons8-add-new.png";
-import { useNavigate } from "react-router-dom";
-const { React, useEffect, useState } = require("react");
+import { useNavigate, Link } from "react-router-dom";
+import { React, useEffect, useState } from "react";
 
 const Navbar = () => {
   const [loggedStatus, setLoggedStatus] = useState();
@@ -8,25 +8,30 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const getUserStatus = async () => {
-    const res = await fetch("http://localhost:5000/taskaid/login/status", {
+    // Send GET req to backend to see if user is logged in
+    const loginRes = await fetch("http://localhost:5000/taskaid/login/status", {
       method: "GET",
       credentials: "include",
     });
 
-    if (res.status === 200) {
-      const userRes = await res.json();
+    if (loginRes.status === 200) {
+      // User logged in
+      const userRes = await loginRes.json();
       setLoggedStatus(userRes);
       setLoading(false);
     } else {
+      // User NOT logged in
       setLoggedStatus();
       setLoading(false);
     }
   };
 
+  // Run on initial component mount
   useEffect(() => {
     getUserStatus();
   }, []);
 
+  // log user out
   const logout = async () => {
     await fetch("http://localhost:5000/taskaid/logout", {
       method: "POST",
@@ -68,32 +73,35 @@ const Navbar = () => {
           className="justify-content-end align-items-center collapse navbar-collapse"
           id="navbarSupportedContent"
         >
+          {/* Check if user is logged in or not */}
           {loggedStatus ? (
             <ul className="navbar-nav mb-2 mb-lg-0">
               <li className="nav-item">
-                <a
-                  className="nav-link me-4 ps-8 pe-8"
-                  aria-current="page"
-                  href="/taskaid/create-task"
+                <Link
+                  to="/taskaid/create-task"
+                  className="me-4"
+                  state={{ newTask: true }}
                 >
                   <img
                     className="add-task-btn-img"
                     src={addBtnImg}
                     alt="add task"
                   />
-                </a>
+                </Link>
               </li>
               <li className="nav-item" style={{ lineHeight: "25px" }}>
-                <a className="nav-link" href="/taskaid/user/info">
+                <a
+                  className="nav-link"
+                  href="/taskaid/user/info"
+                  style={{ display: "flex" }}
+                >
                   {loggedStatus.username}
+                  <img
+                    className="profile-img ms-2"
+                    src={loggedStatus.profileImg}
+                    alt="Profile"
+                  ></img>
                 </a>
-              </li>
-              <li className="nav-item me-4" style={{ lineHeight: "25px" }}>
-                <img
-                  className="profile-img"
-                  src={loggedStatus.profileImg}
-                  alt="Profile"
-                ></img>
               </li>
               <li className="nav-item" style={{ lineHeight: "25px" }}>
                 <button onClick={logout} className="nav-link nav-btn">
@@ -106,6 +114,11 @@ const Navbar = () => {
               <li className="nav-item" style={{ lineHeight: "25px" }}>
                 <a className="nav-link" href="/taskaid/login">
                   Login
+                </a>
+              </li>
+              <li className="nav-item" style={{ lineHeight: "25px" }}>
+                <a className="nav-link" href="/taskaid/signup">
+                  Signup
                 </a>
               </li>
             </ul>
