@@ -148,6 +148,7 @@ const TaskForm = () => {
       getTask();
     }
     getLabels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
