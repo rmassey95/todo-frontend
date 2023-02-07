@@ -9,7 +9,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 
-const UserHomepage = () => {
+const UserHomepage = ({ backendUrl }) => {
   const [tasks, setTasks] = useState();
   const [labels, setLabels] = useState([]);
   const [selectDate, setSelectDate] = useState(false);
@@ -19,7 +19,7 @@ const UserHomepage = () => {
   const navigate = useNavigate();
 
   const getTasks = () => {
-    return fetch("http://localhost:5000/taskaid/tasks", {
+    return fetch(`${backendUrl}/taskaid/tasks`, {
       method: "GET",
       // credentials set to include allows cookies to be passed through request
       credentials: "include",
@@ -27,7 +27,7 @@ const UserHomepage = () => {
   };
 
   const getLabels = () => {
-    return fetch("http://localhost:5000/taskaid/user/labels", {
+    return fetch(`${backendUrl}/taskaid/user/labels`, {
       method: "GET",
       // credentials set to include allows cookies to be passed through request
       credentials: "include",
@@ -124,7 +124,7 @@ const UserHomepage = () => {
     }
 
     const tasksRes = await fetch(
-      `http://localhost:5000/taskaid/tasks/by-priority/${prio}`,
+      `${backendUrl}/taskaid/tasks/by-priority/${prio}`,
       {
         method: "GET",
         // credentials set to include allows cookies to be passed through request
@@ -193,7 +193,7 @@ const UserHomepage = () => {
     const title = dateTitle(formattedDate);
 
     const tasksRes = await fetch(
-      `http://localhost:5000/taskaid/tasks/by-date/${formattedDate}`,
+      `${backendUrl}/taskaid/tasks/by-date/${formattedDate}`,
       {
         method: "GET",
         credentials: "include",
@@ -226,7 +226,7 @@ const UserHomepage = () => {
     setLoading(true);
     setSelectDate(false);
     const tasksRes = await fetch(
-      `http://localhost:5000/taskaid/tasks/by-label/${label}`,
+      `${backendUrl}/taskaid/tasks/by-label/${label}`,
       {
         method: "GET",
         // credentials set to include allows cookies to be passed through request
@@ -249,13 +249,13 @@ const UserHomepage = () => {
     // If the task is the only one for the user, before deleting we remove that
     // label from user labels
     if (tasks.filter((task) => task.label === taskLabel).length === 1) {
-      await fetch(
-        `http://localhost:5000/taskaid/user/remove-label/${taskLabel}`,
-        { method: "PUT", credentials: "include" }
-      );
+      await fetch(`${backendUrl}/taskaid/user/remove-label/${taskLabel}`, {
+        method: "PUT",
+        credentials: "include",
+      });
     }
 
-    await fetch(`http://localhost:5000/taskaid/task/delete/${taskId}`, {
+    await fetch(`${backendUrl}/taskaid/task/delete/${taskId}`, {
       method: "DELETE",
       credentials: "include",
     });

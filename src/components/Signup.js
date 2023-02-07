@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 const { v4: uuidv4 } = require("uuid");
 
-const Signup = () => {
+const Signup = ({ backendUrl }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
@@ -28,7 +28,7 @@ const Signup = () => {
     e.preventDefault();
 
     // Send POST req to backend with username and pw details
-    const signupRes = await fetch("http://localhost:5000/taskaid/signup", {
+    const signupRes = await fetch(`${backendUrl}/taskaid/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

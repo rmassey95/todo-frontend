@@ -1,7 +1,7 @@
 {
   "name": "todo-frontend",
   "version": "0.1.0",
-  "homepage": "https://rmassey95.github.io/todo-frontend",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@fullcalendar/core": "^6.1.1",
@@ -25,6 +25,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmassey95/todo-frontend.git"
   },
   "eslintConfig": {
     "extends": [

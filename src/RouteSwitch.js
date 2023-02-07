@@ -7,17 +7,37 @@ import TaskForm from "./components/TaskForm";
 import UserInfo from "./components/UserInfo";
 
 const RouteSwitch = () => {
+  const backendUrl = "https://taskaid.onrender.com";
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/taskaid/signup" element={<Signup />} />
-        <Route path="/taskaid/login" element={<Login />} />
-        <Route path="/taskaid" element={<UserHomepage />} />
-        <Route path="/taskaid/create-task" element={<TaskForm />} />
-        <Route path="/taskaid/update-task/:taskId" element={<TaskForm />} />
-        <Route path="/taskaid/user/info" element={<UserInfo />} />
-        <Route path="*" element={<Homepage />} />
+        <Route path="/" element={<Homepage backendUrl={backendUrl} />} />
+        <Route
+          path="/taskaid/signup"
+          element={<Signup backendUrl={backendUrl} />}
+        />
+        <Route
+          path="/taskaid/login"
+          element={<Login backendUrl={backendUrl} />}
+        />
+        <Route
+          path="/taskaid"
+          element={<UserHomepage backendUrl={backendUrl} />}
+        />
+        <Route
+          path="/taskaid/create-task"
+          element={<TaskForm backendUrl={backendUrl} />}
+        />
+        <Route
+          path="/taskaid/update-task/:taskId"
+          element={<TaskForm backendUrl={backendUrl} />}
+        />
+        <Route
+          path="/taskaid/user/info"
+          element={<UserInfo backendUrl={backendUrl} />}
+        />
+        <Route path="*" element={<Homepage backendUrl={backendUrl} />} />
       </Routes>
     </BrowserRouter>
   );

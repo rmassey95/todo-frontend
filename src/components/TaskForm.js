@@ -5,7 +5,7 @@ import Footer from "./Footer";
 
 const { v4: uuidv4 } = require("uuid");
 
-const TaskForm = () => {
+const TaskForm = ({ backendUrl }) => {
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [label, setLabel] = useState("");
@@ -48,7 +48,7 @@ const TaskForm = () => {
   const checkStatus = async (res) => {
     if (res.status === 200) {
       if (!labels.includes(label === "" ? "No Label" : label)) {
-        await fetch(`http://localhost:5000/taskaid/user/add-label/${label}`, {
+        await fetch(`${backendUrl}/taskaid/user/add-label/${label}`, {
           method: "POST",
           credentials: "include",
         });
@@ -65,35 +65,32 @@ const TaskForm = () => {
 
     if (taskId) {
       // update existing task
-      const res = await fetch(
-        `http://localhost:5000/taskaid/task/update/${taskId}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: title,
-            dueDate: dueDate,
-            priority: prio,
-            label: label === "" ? "No Label" : label,
-            desc: desc,
-          }),
-        }
-      );
+      const res = await fetch(`${backendUrl}/taskaid/task/update/${taskId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title,
+          dueDate: dueDate,
+          priority: prio,
+          label: label === "" ? "No Label" : label,
+          desc: desc,
+        }),
+      });
       if (oldLabel !== label) {
         if (tasks.filter((task) => task.label === oldLabel).length === 1) {
-          await fetch(
-            `http://localhost:5000/taskaid/user/remove-label/${oldLabel}`,
-            { method: "PUT", credentials: "include" }
-          );
+          await fetch(`${backendUrl}/taskaid/user/remove-label/${oldLabel}`, {
+            method: "PUT",
+            credentials: "include",
+          });
         }
       }
       checkStatus(res);
     } else {
       // create new task
-      const res = await fetch("http://localhost:5000/taskaid/task/create", {
+      const res = await fetch(`${backendUrl}/taskaid/task/create`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -113,7 +110,7 @@ const TaskForm = () => {
 
   // Get all labels a user has used
   const getLabels = async () => {
-    const res = await fetch("http://localhost:5000/taskaid/user/labels", {
+    const res = await fetch(`${backendUrl}/taskaid/user/labels`, {
       method: "GET",
       // credentials set to include allows cookies to be passed through request
       credentials: "include",
@@ -125,7 +122,7 @@ const TaskForm = () => {
 
   // Get task that will be updated
   const getTask = async () => {
-    const res = await fetch(`http://localhost:5000/taskaid/task/${taskId}`, {
+    const res = await fetch(`${backendUrl}/taskaid/task/${taskId}`, {
       method: "GET",
       credentials: "include",
     });

@@ -2,14 +2,14 @@ import addBtnImg from "../img/icons8-add-new.png";
 import { useNavigate, Link } from "react-router-dom";
 import { React, useEffect, useState } from "react";
 
-const Navbar = () => {
+const Navbar = ({ backendUrl }) => {
   const [loggedStatus, setLoggedStatus] = useState();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const getUserStatus = async () => {
     // Send GET req to backend to see if user is logged in
-    const loginRes = await fetch("http://localhost:5000/taskaid/login/status", {
+    const loginRes = await fetch(`${backendUrl}/taskaid/login/status`, {
       method: "GET",
       credentials: "include",
     });
@@ -33,7 +33,7 @@ const Navbar = () => {
 
   // log user out
   const logout = async () => {
-    await fetch("http://localhost:5000/taskaid/logout", {
+    await fetch(`${backendUrl}/taskaid/logout`, {
       method: "POST",
       credentials: "include",
     });

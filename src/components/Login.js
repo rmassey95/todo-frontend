@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-const Login = () => {
+const Login = ({ backendUrl }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
 
     // Send login POST req to backend
-    const loginRes = await fetch("http://localhost:5000/taskaid/login", {
+    const loginRes = await fetch(`${backendUrl}/taskaid/login`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -53,7 +53,7 @@ const Login = () => {
 
   return (
     <div className="main">
-      <Navbar />
+      <Navbar backendUrl={backendUrl} />
       <div className="form-container">
         <div className="container">
           <h1>Login</h1>

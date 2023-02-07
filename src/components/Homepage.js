@@ -1,10 +1,10 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-const Homepage = () => {
+const Homepage = ({ backendUrl }) => {
   return (
     <div className="main">
-      <Navbar />
+      <Navbar backendUrl={backendUrl} />
       <div className="homepage">
         <h1 style={{ marginBottom: "10px" }}>
           Welcome to <span className="text-color-main">Taskaid</span>!

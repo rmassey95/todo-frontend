@@ -3,7 +3,7 @@ import Footer from "./Footer";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const UserInfo = () => {
+const UserInfo = ({ backendUrl }) => {
   const [user, setUser] = useState();
   const [profileImg, setProfileImg] = useState("");
   const [loading, setLoading] = useState(true);
@@ -12,7 +12,7 @@ const UserInfo = () => {
 
   // Get user info from backend
   const getUser = async () => {
-    const res = await fetch("http://localhost:5000/taskaid/login/status", {
+    const res = await fetch(`${backendUrl}/taskaid/login/status`, {
       method: "GET",
       credentials: "include",
     });
@@ -34,19 +34,16 @@ const UserInfo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch(
-      "http://localhost:5000/taskaid/user/profile-img/update",
-      {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          profileImg: profileImg,
-        }),
-      }
-    );
+    const res = await fetch(`${backendUrl}/taskaid/user/profile-img/update`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        profileImg: profileImg,
+      }),
+    });
     if (res.status === 200) {
       getUser();
     }
