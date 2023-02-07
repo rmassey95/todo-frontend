@@ -17,6 +17,7 @@ const RouteSwitch = () => {
         <Route path="/taskaid/create-task" element={<TaskForm />} />
         <Route path="/taskaid/update-task/:taskId" element={<TaskForm />} />
         <Route path="/taskaid/user/info" element={<UserInfo />} />
+        <Route path="*" element={<Homepage />} />
       </Routes>
     </BrowserRouter>
   );
