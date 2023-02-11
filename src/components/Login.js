@@ -12,6 +12,7 @@ const Login = ({ backendUrl }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    document.querySelector(".login-btn").disabled = true;
 
     // Send login POST req to backend
     const loginRes = await fetch(`${backendUrl}/taskaid/login`, {
@@ -28,10 +29,14 @@ const Login = ({ backendUrl }) => {
 
     if (loginRes.status === 200) {
       // success, go to main page
+
+      document.querySelector(".login-btn").disabled = false;
       navigate("/taskaid");
+      return;
     }
 
     // Fail to login, send error msg to user
+    document.querySelector(".login-btn").disabled = false;
     const resData = await loginRes.json();
     setError(resData.msg);
   };
@@ -88,7 +93,7 @@ const Login = ({ backendUrl }) => {
                 <li className="text-danger">{error}</li>
               </ul>
             )}
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary login-btn">
               Login
             </button>
           </form>

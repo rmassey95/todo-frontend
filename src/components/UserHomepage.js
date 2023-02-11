@@ -277,7 +277,7 @@ const UserHomepage = ({ backendUrl }) => {
   if (loading) {
     return (
       <div className="main">
-        <Navbar />
+        <Navbar backendUrl={backendUrl} />
         <div className="flex-grow-1 position-relative d-flex">
           <Sidebar
             getData={getData}
@@ -295,7 +295,7 @@ const UserHomepage = ({ backendUrl }) => {
   }
   return (
     <div className="main">
-      <Navbar />
+      <Navbar backendUrl={backendUrl} />
       <div className="flex-grow-1 position-relative d-flex">
         <Sidebar
           getData={getData}
@@ -314,7 +314,7 @@ const UserHomepage = ({ backendUrl }) => {
             />
           </div>
         ) : (
-          <div className="container">
+          <div className="flex-grow-1">
             <div className="d-flex align-items-center justify-content-between mt-3 ms-3 me-3 pb-2 border-bottom">
               <h2 style={{ margin: 0 }}>{title}</h2>
               <div className="text-end">

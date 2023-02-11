@@ -52,7 +52,7 @@ const Signup = ({ backendUrl }) => {
 
   return (
     <div className="main">
-      <Navbar />
+      <Navbar backendUrl={backendUrl} />
       <div className="form-container">
         <div className="container">
           <h1>Signup</h1>

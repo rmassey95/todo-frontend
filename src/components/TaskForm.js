@@ -79,7 +79,7 @@ const TaskForm = ({ backendUrl }) => {
           desc: desc,
         }),
       });
-      if (oldLabel !== label) {
+      if (oldLabel !== label && label !== "") {
         if (tasks.filter((task) => task.label === oldLabel).length === 1) {
           await fetch(`${backendUrl}/taskaid/user/remove-label/${oldLabel}`, {
             method: "PUT",
@@ -131,7 +131,7 @@ const TaskForm = ({ backendUrl }) => {
 
     setTitle(task.title);
     setDueDate(task.dueDate);
-    setLabel(task.label);
+    setLabel(task.label === "No Label" ? "" : task.label);
     setOldLabel(task.label);
     setDesc(task.desc);
     setPrio(task.priority);
@@ -153,7 +153,7 @@ const TaskForm = ({ backendUrl }) => {
   } else {
     return (
       <div className="main">
-        <Navbar />
+        <Navbar backendUrl={backendUrl} />
         <div className="form-container">
           <div className="container">
             {taskId ? <h1>Update Task</h1> : <h1>Add Task</h1>}

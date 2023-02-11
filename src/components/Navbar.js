@@ -11,6 +11,7 @@ const Navbar = ({ backendUrl }) => {
     // Send GET req to backend to see if user is logged in
     const loginRes = await fetch(`${backendUrl}/taskaid/login/status`, {
       method: "GET",
+      // credentials set to include allows cookies to be passed through request
       credentials: "include",
     });
 
@@ -103,7 +104,7 @@ const Navbar = ({ backendUrl }) => {
                   ></img>
                 </a>
               </li>
-              <li className="nav-item" style={{ lineHeight: "25px" }}>
+              <li className="nav-item ms-4" style={{ lineHeight: "25px" }}>
                 <button onClick={logout} className="nav-link nav-btn">
                   Logout
                 </button>

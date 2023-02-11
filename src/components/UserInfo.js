@@ -56,7 +56,7 @@ const UserInfo = ({ backendUrl }) => {
   if (loading) {
     return (
       <div className="main">
-        <Navbar />
+        <Navbar backendUrl={backendUrl} />
         <div className="container loading"></div>
         <Footer />
       </div>
@@ -64,7 +64,7 @@ const UserInfo = ({ backendUrl }) => {
   }
   return (
     <div className="main">
-      <Navbar />
+      <Navbar backendUrl={backendUrl} />
       <div className="container flex-grow-1 d-flex flex-column justify-content-center">
         <h2>Welcome, {user.username}</h2>
         <div className="d-flex mt-2 ms-3" style={{ width: "100%" }}>

@@ -1,7 +1,7 @@
 {
   "name": "todo-frontend",
   "version": "0.1.0",
-  "homepage": "./",
+  "homepage": "https://gorgeous-piroshki-03aec7.netlify.app/",
   "private": true,
   "dependencies": {
     "@fullcalendar/core": "^6.1.1",
@@ -19,16 +19,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rmassey95/todo-frontend.git"
   },
   "eslintConfig": {
     "extends": [

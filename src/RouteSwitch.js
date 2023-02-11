@@ -12,7 +12,7 @@ const RouteSwitch = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Homepage backendUrl={backendUrl} />} />
+        <Route path="/" element={<Homepage backendUrl={backendUrl} exact />} />
         <Route
           path="/taskaid/signup"
           element={<Signup backendUrl={backendUrl} />}
@@ -37,7 +37,6 @@ const RouteSwitch = () => {
           path="/taskaid/user/info"
           element={<UserInfo backendUrl={backendUrl} />}
         />
-        <Route path="*" element={<Homepage backendUrl={backendUrl} />} />
       </Routes>
     </BrowserRouter>
   );
